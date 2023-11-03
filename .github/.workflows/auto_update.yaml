@@ -1,0 +1,30 @@
+name: auto update snapshot links
+
+on:
+  # Since we're pushing from this CI, don't run this on the push event because
+  # that'll trigger an infinite loop
+  # push: [ main ]
+
+  # Add a schedule to run the job every day at 0:00 UTC
+  schedule:
+    - cron: "0 0 * * *"
+
+  # Allow running this workflow manually
+  workflow_dispatch:
+
+jobs:
+  auto_update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Commit files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Autocommit: updated at $(date -u)"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
